@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script> <script src="./scripts/firebase-config.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3B82F6",
+            secondary: "#10B981"
+          },
+          borderRadius: {
+            none: "0px",
+            sm: "4px",
+            DEFAULT: "8px",
+            md: "12px",
+            lg: "16px",
+            xl: "20px",
+            "2xl": "24px",
+            "3xl": "32px",
+            full: "9999px",
+            button: "8px",
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+  <link rel="stylesheet" href="./styles/dashboard.css" />
+  <title>Beranda</title>
+</head>
+
+<body>
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="#" class="text-2xl font-['Pacifico'] text-primary">LifeAware</a>
+      <nav class="hidden md:flex space-x-6">
+        <a href="beranda.html" class="text-primary border-b-2 border-primary">Beranda</a>
+        <a href="dashboard.html" class="text-gray-600 hover:text-primary">Dashboard</a>
+        <a href="informasi.html" class="text-gray-600 hover:text-primary">Informasi Kesehatan</a>
+        <a href="profil.html" class="text-gray-600 hover:text-primary">Profil</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button id="user-menu-button" class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+                <img
+                  src="https://i.pinimg.com/736x/07/fb/34/07fb3452c4640d881a16d08c2e314f3e.jpg"
+                  alt="User"
+                  class="w-full h-full object-cover object-top"
+                />
+              </div>
+            <span class="text-gray-700" id="header-user-display-name">...</span> <i class="ri-arrow-down-s-line text-gray-500"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1 hidden z-50">
+            <div class="border-t border-gray-100"></div>
+            <a href="profil.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profil</a>
+            <a href="#settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Pengaturan</a>
+            <a href="#" id="logout-btn" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Keluar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Fitur Utama</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Solusi lengkap untuk memantau dan mengelola kesehatan Anda dengan
+          mudah dan akurat.
+        </p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+            <i class="ri-heart-pulse-line text-primary ri-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Monitoring Real-time
+          </h3>
+          <p class="text-gray-600">
+            Pantau SpO2, detak jantung, dan suhu tubuh secara real-time dengan
+            sensor MAX30102 yang akurat.
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div class="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <i class="ri-file-list-3-line text-secondary ri-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Informasi Kesehatan
+          </h3>
+          <p class="text-gray-600">
+            Dapatkan informasi dan tips kesehatan terbaru dari sumber
+            terpercaya untuk menjaga kesehatan Anda.
+          </p>
+        </div>
+        <div class="bg-white p-6 rounded shadow-lg border border-gray-100 hover:shadow-xl transition-shadow">
+          <div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+            <i class="ri-user-settings-line text-purple-600 ri-xl"></i>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-3">
+            Manajemen Pengguna
+          </h3>
+          <p class="text-gray-600">
+            Kelola beberapa pengguna dan sensor dalam satu akun untuk memantau
+            kesehatan keluarga Anda.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 mb-4">Cara Kerja</h2>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+          Proses sederhana untuk memulai monitoring kesehatan Anda.
+        </p>
+      </div>
+      <div class="flex flex-col md:flex-row items-center justify-center gap-8">
+        <div class="flex flex-col items-center max-w-xs text-center">
+          <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-4 text-xl font-bold">
+            1
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            Daftar Akun
+          </h3>
+          <p class="text-gray-600">
+            Buat akun LifeAware dan hubungkan sensor MAX30102 Anda.
+          </p>
+        </div>
+        <div class="hidden md:block">
+          <i class="ri-arrow-right-line text-gray-400 ri-2x"></i>
+        </div>
+        <div class="block md:hidden">
+          <i class="ri-arrow-down-line text-gray-400 ri-2x"></i>
+        </div>
+        <div class="flex flex-col items-center max-w-xs text-center">
+          <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-4 text-xl font-bold">
+            2
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">
+            Pasang Sensor
+          </h3>
+          <p class="text-gray-600">
+            Pasang sensor pada tubuh Anda sesuai petunjuk untuk pengukuran
+            akurat.
+          </p>
+        </div>
+        <div class="hidden md:block">
+          <i class="ri-arrow-right-line text-gray-400 ri-2x"></i>
+        </div>
+        <div class="block md:hidden">
+          <i class="ri-arrow-down-line text-gray-400 ri-2x"></i>
+        </div>
+        <div class="flex flex-col items-center max-w-xs text-center">
+          <div class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center mb-4 text-xl font-bold">
+            3
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Lihat Data</h3>
+          <p class="text-gray-600">
+            Pantau data kesehatan Anda secara real-time di dashboard
+            LifeAware.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <script src="./scripts/beranda.js"></script>
+</body>
+
+</html>

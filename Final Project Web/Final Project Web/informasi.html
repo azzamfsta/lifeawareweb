@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeAware - Monitoring Kesehatan</title>
+
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.7.1/firebase-storage-compat.js"></script>
+  <script>
+    // Ganti dengan konfigurasi Firebase proyekmu
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqxbTSJL347P9sNxnjb-7sOHMcWuJTFF8",
+      authDomain: "azzamfsta-9f8ff.firebaseapp.com",
+      databaseURL: "https://azzamfsta-9f8ff-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "azzamfsta-9f8ff",
+      storageBucket: "azzamfsta-9f8ff.firebasestorage.app",
+      messagingSenderId: "884937188666",
+      appId: "1:884937188666:web:856306b0ea0834f4eb5c03",
+      measurementId: "G-D5YZM3LNCC"
+    };
+
+    // Inisialisasi Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    } else {
+      firebase.app(); // if already initialized, use that one
+    }
+  </script>
+
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#3B82F6",
+            secondary: "#10B981"
+          },
+          borderRadius: {
+            none: "0px",
+            sm: "4px",
+            DEFAULT: "8px",
+            md: "12px",
+            lg: "16px",
+            xl: "20px",
+            "2xl": "24px",
+            "3xl": "32px",
+            full: "9999px",
+            button: "8px",
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" />
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    body {
+      font-family: "Inter", Arial, sans-serif;
+      background-color: #f9fafb;
+    }
+
+    /* Hide number input arrows */
+    .hide-number-arrows::-webkit-outer-spin-button,
+    .hide-number-arrows::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+
+    .hide-number-arrows {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    /* Custom Switch */
+    .custom-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 24px;
+    }
+
+    .custom-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: 0.4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: 0.4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: #3b82f6;
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(16px);
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      position: relative;
+      padding-left: 28px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-checkbox input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #eee;
+      border-radius: 4px;
+    }
+
+    .custom-checkbox:hover input~.checkmark {
+      background-color: #ccc;
+    }
+
+    .custom-checkbox input:checked~.checkmark {
+      background-color: #3b82f6;
+    }
+
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .custom-checkbox input:checked~.checkmark:after {
+      display: block;
+    }
+
+    .custom-checkbox .checkmark:after {
+      left: 7px;
+      top: 3px;
+      width: 6px;
+      height: 12px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    /* Custom Radio Button */
+    .custom-radio {
+      position: relative;
+      padding-left: 28px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .custom-radio input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+
+    .radio-mark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #eee;
+      border-radius: 50%;
+    }
+
+    .custom-radio:hover input~.radio-mark {
+      background-color: #ccc;
+    }
+
+    .custom-radio input:checked~.radio-mark {
+      background-color: #3b82f6;
+    }
+
+    .radio-mark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+
+    .custom-radio input:checked~.radio-mark:after {
+      display: block;
+    }
+
+    .custom-radio .radio-mark:after {
+      top: 6px;
+      left: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+    }
+
+    /* Custom Range Slider */
+    .custom-range {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 5px;
+      background: #d7dcdf;
+      outline: none;
+    }
+
+    .custom-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+    }
+
+    .custom-range::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #3b82f6;
+      cursor: pointer;
+      border: none;
+    }
+
+    /* Active Tab */
+    .tab-active {
+      color: #3b82f6;
+      border-bottom: 2px solid #3b82f6;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="bg-white shadow-sm">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <a href="#" class="text-2xl font-['Pacifico'] text-primary">LifeAware</a>
+      <nav class="hidden md:flex space-x-6">
+        <a href="beranda.html" class="text-gray-600 hover:text-primary">Beranda</a>
+        <a href="dashboard.html" class="text-gray-600 hover:text-primary">Dashboard</a>
+        <a href="informasi.html" class="text-primary border-b-2 border-primary">Informasi Kesehatan</a>
+        <a href="profil.html" class="text-gray-600 hover:text-primary">Profil</a>
+      </nav>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button id="user-menu-button" class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+                <img
+                  src="https://i.pinimg.com/736x/07/fb/34/07fb3452c4640d881a16d08c2e314f3e.jpg"
+                  alt="User"
+                  class="w-full h-full object-cover object-top"
+                  id="header-profile-picture"
+                />
+              </div>
+            <span class="text-gray-700" id="header-user-display-name">...</span> <i class="ri-arrow-down-s-line text-gray-500"></i>
+          </button>
+          <div id="user-menu" class="absolute right-0 mt-2 w-48 bg-white rounded shadow-lg py-1 hidden z-50">
+            <div class="border-t border-gray-100"></div>
+            <a href="profil.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Profil</a>
+            <a href="#settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Pengaturan</a>
+            <a href="#" id="logout-btn" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">Keluar</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow bg-gray-50 py-8">
+    <div class="container mx-auto px-4">
+      <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold text-gray-900">Informasi Kesehatan</h1>
+        <div class="relative">
+          <div class="flex items-center border border-gray-300 bg-white rounded-full px-4 py-2">
+            <i class="ri-search-line text-gray-400 mr-2 cursor-pointer" id="search-button"></i>
+            <input type="text" placeholder="Cari artikel..." class="border-none focus:outline-none text-sm w-56" id="search-input" />
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mb-8">
+        <button class="bg-primary text-white px-4 py-2 !rounded-full whitespace-nowrap">Semua</button>        
+      </div>
+
+      <div id="featured-article-container" class="bg-white rounded shadow-md overflow-hidden mb-8">
+        <p class="p-6 text-center text-gray-500">Memuat artikel unggulan...</p>
+      </div>
+
+      <div id="articles-grid-container" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <p class="p-6 text-center text-gray-500 col-span-full">Memuat artikel lainnya...</p>
+      </div>
+
+      <div class="flex justify-center">
+        <nav class="flex items-center space-x-1" id="pagination-nav"> <a href="#" class="px-4 py-2 text-gray-500 bg-white rounded hover:bg-gray-100" id="prev-page-btn"> <i class="ri-arrow-left-s-line"></i>
+          </a>
+          <div id="page-numbers-container" class="flex space-x-1">
+            <a href="#" class="px-4 py-2 text-white bg-primary rounded" data-page="1">1</a>
+            <a href="#" class="px-4 py-2 text-gray-700 bg-white rounded hover:bg-gray-100" data-page="2">2</a>
+            <a href="#" class="px-4 py-2 text-gray-700 bg-white rounded hover:bg-gray-100" data-page="3">3</a>
+            <a href="#" class="px-4 py-2 text-gray-700 bg-white rounded hover:bg-gray-100" data-page="4">4</a>
+            <a href="#" class="px-4 py-2 text-gray-700 bg-white rounded hover:bg-gray-100" data-page="5">5</a>
+          </div>
+          <a href="#" class="px-4 py-2 text-gray-500 bg-white rounded hover:bg-gray-100" id="next-page-btn"> <i class="ri-arrow-right-s-line"></i>
+          </a>
+        </nav>
+      </div>
+    </div>
+  </main>
+
+  <script src="./scripts/informasi.js"></script>
+
+</body>
+
+</html>
